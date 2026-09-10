@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suzuki Swift Booking Open - Suzuki Kohat Motors</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background:#0a0f1c; color:#fff; line-height:1.6; }
+  .container { max-width:1100px; margin:auto; padding:0 20px; }
+
+  .hero { 
+    background: linear-gradient(rgba(5,10,25,0.75), rgba(5,10,25,0.9)), url('car-ad.jpg') center/cover no-repeat;
+    min-height: 100vh; display:flex; align-items:center; text-align:center; padding:80px 20px;
+  }
+  .hero h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight:900; letter-spacing:2px; }
+  .hero h1 span { color:#4db8ff; }
+  .hero p { font-size:1.2rem; margin:20px 0; color:#d0e0ff; }
+  .btn { display:inline-block; padding:16px 36px; border-radius:50px; font-weight:700; text-decoration:none; transition:0.3s; margin:8px; }
+  .btn-primary { background:#4db8ff; color:#001; box-shadow:0 0 20px #4db8ff88; }
+  .btn-primary:hover { background:#fff; transform:scale(1.05); }
+  .btn-outline { border:2px solid #4db8ff; color:#4db8ff; }
+  .btn-outline:hover { background:#4db8ff; color:#001; }
+  .trust { margin-top:30px; font-size:0.95rem; color:#a0b8d0; }
+
+  .features { padding:80px 20px; text-align:center; }
+  .features h2 { font-size:2.5rem; margin-bottom:40px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:30px; }
+  .card { background:#111a2e; padding:30px; border-radius:16px; border:1px solid #1e2f4a; }
+  .card h3 { color:#4db8ff; margin-bottom:10px; }
+
+  .form-section { padding:80px 20px; background:#0d1424; }
+  .form-box { max-width:600px; margin:auto; background:#111a2e; padding:40px; border-radius:20px; border:1px solid #1e2f4a; }
+  .form-box h2 { text-align:center; margin-bottom:10px; }
+  .form-box p { text-align:center; margin-bottom:30px; color:#a0b8d0; }
+  .form-group { margin-bottom:20px; }
+  .form-group input, .form-group textarea { width:100%; padding:14px; border-radius:10px; border:1px solid #2a3f5f; background:#0a0f1c; color:#fff; font-size:1rem; }
+  .form-group input:focus, .form-group textarea:focus { outline:none; border-color:#4db8ff; }
+  .form-box .btn-primary { width:100%; border:none; cursor:pointer; font-size:1.1rem; }
+
+  .contact { padding:60px 20px; text-align:center; }
+  .contact h2 { font-size:2rem; margin-bottom:20px; }
+  .contact p { margin:10px 0; font-size:1.1rem; }
+  .contact a { color:#4db8ff; text-decoration:none; font-weight:600; }
+  footer { text-align:center; padding:30px; background:#050a14; color:#607090; font-size:0.9rem; }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="container">
+    <h1>BOOKING <span>OPEN</span></h1>
+    <p>Designed to Stand Out. Built to Drive Ahead.</p>
+    <p><strong>Suzuki Swift</strong> – Now taking bookings at Suzuki Kohat Motors.</p>
+    <a href="#booking" class="btn btn-primary">Book Your Swift Now</a>
+    <a href="tel:03320583940" class="btn btn-outline">Call 0332 0583940</a>
+    <div class="trust">📍 Main Indus Highway, Near Pindi Pull, Kohat</div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <h2>Why the Suzuki Swift?</h2>
+    <div class="grid">
+      <div class="card"><h3>Striking Design</h3><p>A bold, sporty look that turns heads on every road.</p></div>
+      <div class="card"><h3>Drive Ahead</h3><p>Responsive performance for city streets and highways.</p></div>
+      <div class="card"><h3>Smart Comfort</h3><p>Modern interior with features designed for everyday ease.</p></div>
+      <div class="card"><h3>Trusted Dealer</h3><p>Suzuki Kohat Motors – your local destination for reliable service.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="form-section" id="booking">
+  <div class="container">
+    <div class="form-box">
+      <h2>Reserve Your Suzuki Swift</h2>
+      <p>Fill in your details and our team will call you to confirm your booking.</p>
+      <form onsubmit="event.preventDefault(); alert('Thank you! We will contact you shortly.');">
+        <div class="form-group"><input type="text" placeholder="Full Name" required></div>
+        <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
+        <div class="form-group"><input type="date" placeholder="Preferred Date"></div>
+        <div class="form-group"><textarea rows="3" placeholder="Message (optional)"></textarea></div>
+        <button type="submit" class="btn btn-primary">Confirm My Booking</button>
+      </form>
+      <p style="margin-top:20px;">Or call directly: <a href="tel:03320583940" style="color:#4db8ff;">0332 0583940</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="container">
+    <h2>Visit Suzuki Kohat Motors</h2>
+    <p>📍 Main Indus Highway Near Pindi Pull, Kohat</p>
+    <p>📞 <a href="tel:03320583940">0332 0583940</a></p>
+    <p>🕒 Open Mon–Sat: 9:00 AM – 7:00 PM</p>
+    <p style="margin-top:20px;"><a href="https://maps.google.com/?q=Suzuki+Kohot+Motors" target="_blank">Get Directions →</a></p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Suzuki Kohat Motors. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
