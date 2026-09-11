@@ -29,15 +29,21 @@
   .card { background:#111a2e; padding:30px; border-radius:16px; border:1px solid #1e2f4a; }
   .card h3 { color:#4db8ff; margin-bottom:10px; }
 
-  .form-section { padding:80px 20px; background:#0d1424; }
-  .form-box { max-width:600px; margin:auto; background:#111a2e; padding:40px; border-radius:20px; border:1px solid #1e2f4a; }
-  .form-box h2 { text-align:center; margin-bottom:10px; }
-  .form-box p { text-align:center; margin-bottom:30px; color:#a0b8d0; }
-  .form-group { margin-bottom:20px; }
-  .form-group input, .form-group textarea { width:100%; padding:14px; border-radius:10px; border:1px solid #2a3f5f; background:#0a0f1c; color:#fff; font-size:1rem; }
-  .form-group input:focus, .form-group textarea:focus { outline:none; border-color:#4db8ff; }
-  .form-box .btn-primary { width:100%; border:none; cursor:pointer; font-size:1.1rem; }
-
+  <form action="https://formspree.io/f/https://formspree.io/f/xljezork" method="POST">
+  <div class="form-group">
+    <input type="text" name="name" placeholder="Full Name" required>
+  </div>
+  <div class="form-group">
+    <input type="tel" name="phone" placeholder="Phone Number" required>
+  </div>
+  <div class="form-group">
+    <input type="date" name="date" placeholder="Preferred Date">
+  </div>
+  <div class="form-group">
+    <textarea name="message" rows="3" placeholder="Message (optional)"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Confirm My Booking</button>
+</form>
   .contact { padding:60px 20px; text-align:center; }
   .contact h2 { font-size:2rem; margin-bottom:20px; }
   .contact p { margin:10px 0; font-size:1.1rem; }
