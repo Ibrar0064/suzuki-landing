@@ -3,95 +3,1091 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Suzuki Swift Booking Open - Suzuki Kohat Motors</title>
+
+<meta name="description"
+      content="Suzuki Kohat Motors - Book your Suzuki vehicle, service or maintenance appointment.">
+
+<meta name="theme-color" content="#e30613">
+
+<title>Suzuki Kohat Motors | Customer Booking</title>
+
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-  body { background:#0a0f1c; color:#fff; line-height:1.6; }
-  .container { max-width:1100px; margin:auto; padding:0 20px; }
 
-  .hero { 
-    background: linear-gradient(rgba(5,10,25,0.75), rgba(5,10,25,0.9)), url('car-ad.jpg') center/cover no-repeat;
-    min-height: 100vh; display:flex; align-items:center; text-align:center; padding:80px 20px;
-  }
-  .hero h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight:900; letter-spacing:2px; }
-  .hero h1 span { color:#4db8ff; }
-  .hero p { font-size:1.2rem; margin:20px 0; color:#d0e0ff; }
-  .btn { display:inline-block; padding:16px 36px; border-radius:50px; font-weight:700; text-decoration:none; transition:0.3s; margin:8px; }
-  .btn-primary { background:#4db8ff; color:#001; box-shadow:0 0 20px #4db8ff88; }
-  .btn-primary:hover { background:#fff; transform:scale(1.05); }
-  .btn-outline { border:2px solid #4db8ff; color:#4db8ff; }
-  .btn-outline:hover { background:#4db8ff; color:#001; }
-  .trust { margin-top:30px; font-size:0.95rem; color:#a0b8d0; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-  .features { padding:80px 20px; text-align:center; }
-  .features h2 { font-size:2.5rem; margin-bottom:40px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:30px; }
-  .card { background:#111a2e; padding:30px; border-radius:16px; border:1px solid #1e2f4a; }
-  .card h3 { color:#4db8ff; margin-bottom:10px; }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+    line-height: 1.5;
+}
 
- 
-  .contact { padding:60px 20px; text-align:center; }
-  .contact h2 { font-size:2rem; margin-bottom:20px; }
-  .contact p { margin:10px 0; font-size:1.1rem; }
-  .contact a { color:#4db8ff; text-decoration:none; font-weight:600; }
-  footer { text-align:center; padding:30px; background:#050a14; color:#607090; font-size:0.9rem; }
+.container {
+    width: 92%;
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* HEADER */
+
+header {
+    background: #fff;
+    padding: 15px 0;
+    border-bottom: 3px solid #e30613;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #e30613;
+}
+
+.logo span {
+    display: block;
+    color: #222;
+    font-size: 13px;
+}
+
+/* HERO */
+
+.hero {
+    background:
+        linear-gradient(
+            rgba(0,0,0,0.60),
+            rgba(0,0,0,0.60)
+        ),
+        url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1600&q=80");
+
+    background-size: cover;
+    background-position: center;
+
+    min-height: 500px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    color: white;
+}
+
+.hero-content {
+    max-width: 750px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.hero-button {
+    display: inline-block;
+    background: #e30613;
+    color: white;
+    padding: 14px 30px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* BOOKING SECTION */
+
+.booking-section {
+    padding: 60px 0;
+}
+
+.booking-card {
+    background: white;
+    max-width: 750px;
+    margin: auto;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+}
+
+.booking-card h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #e30613;
+    font-size: 32px;
+}
+
+.booking-description {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #666;
+}
+
+/* FORM */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #e30613;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+/* SUBMIT BUTTON */
+
+.submit-button {
+    width: 100%;
+    background: #e30613;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-button:hover {
+    background: #b9000b;
+}
+
+.submit-button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+/* STATUS MESSAGE */
+
+.status-message {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.success {
+    display: block;
+    background: #e8f7e8;
+    color: #187a18;
+}
+
+.error {
+    display: block;
+    background: #ffe8e8;
+    color: #b00000;
+}
+
+/* FEATURES */
+
+.features {
+    padding: 50px 0;
+    background: white;
+}
+
+.features h2 {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.feature {
+    padding: 25px;
+    text-align: center;
+    background: #f7f7f7;
+    border-radius: 10px;
+}
+
+.feature h3 {
+    margin-bottom: 10px;
+    color: #e30613;
+}
+
+/* FOOTER */
+
+footer {
+    background: #222;
+    color: white;
+    text-align: center;
+    padding: 25px 0;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .hero {
+        min-height: 430px;
+    }
+
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .hero p {
+        font-size: 17px;
+    }
+
+    .booking-card {
+        padding: 22px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
 </style>
 </head>
+
+
 <body>
 
+
+<!-- HEADER -->
+
+<header>
+
+<div class="container header-content">
+
+<div class="logo">
+    SUZUKI
+    <span>Kohat Motors</span>
+</div>
+
+</div>
+
+</header>
+
+
+
+<!-- HERO -->
+
 <section class="hero">
-  <div class="container">
-    <h1>BOOKING <span>OPEN</span></h1>
-    <p>Designed to Stand Out. Built to Drive Ahead.</p>
-    <p><strong>Suzuki Swift</strong> – Now taking bookings at Suzuki Kohat Motors.</p>
-    <a href="#booking" class="btn btn-primary">Book Your Swift Now</a>
-    <a href="tel:03320583940" class="btn btn-outline">Call 0332 0583940</a>
-    <div class="trust">📍 Main Indus Highway, Near Pindi Pull, Kohat</div>
-  </div>
+
+<div class="hero-content">
+
+<h1>Suzuki Kohat Motors</h1>
+
+<p>
+Book your Suzuki vehicle, test drive, service or maintenance appointment.
+</p>
+
+<a href="#booking" class="hero-button">
+    Book Now
+</a>
+
+</div>
+
 </section>
+
+
+
+<!-- BOOKING SECTION -->
+
+<section class="booking-section" id="booking">
+
+<div class="container">
+
+<div class="booking-card">
+
+<h2>Customer Booking</h2>
+
+<p class="booking-description">
+Please provide your details and our team will contact you.
+</p>
+
+
+<!--
+====================================================
+FORMSPREE CUSTOMER RECORD SYSTEM
+Endpoint:
+https://formspree.io/f/xaeyknoa
+====================================================
+-->
+
+<form
+    id="customerForm"
+    action="https://formspree.io/f/xaeyknoa"
+    method="POST"
+>
+
+
+<!-- CUSTOMER NAME -->
+
+<div class="form-group">
+
+<label for="customer_name">
+Full Name *
+</label>
+
+<input
+    type="text"
+    id="customer_name"
+    name="customer_name"
+    placeholder="Enter your full name"
+    autocomplete="name"
+    required
+>
+
+</div>
+
+
+
+<!-- PHONE + EMAIL -->
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label for="phone">
+Phone / WhatsApp *
+</label>
+
+<input
+    type="tel"
+    id="phone"
+    name="phone"
+    placeholder="+971 5X XXX XXXX"
+    autocomplete="tel"
+    required
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label for="email">
+Email
+</label>
+
+<input
+    type="email"
+    id="email"
+    name="email"
+    placeholder="customer@email.com"
+    autocomplete="email"
+>
+
+</div>
+
+</div>
+
+
+
+<!-- PREFERRED DATE -->
+
+<div class="form-group">
+
+<label for="preferred_date">
+Preferred Date *
+</label>
+
+<input
+    type="date"
+    id="preferred_date"
+    name="preferred_date"
+    required
+>
+
+</div>
+
+
+
+<!-- VEHICLE -->
+
+<div class="form-group">
+
+<label for="vehicle">
+Vehicle *
+</label>
+
+<select
+    id="vehicle"
+    name="vehicle"
+    required
+>
+
+<option value="">
+Select Vehicle
+</option>
+
+<option value="Suzuki Alto">
+Suzuki Alto
+</option>
+
+<option value="Suzuki Swift">
+Suzuki Swift
+</option>
+
+<option value="Suzuki Fronx">
+Suzuki Fronx
+</option>
+
+<option value="Suzuki Dzire">
+Suzuki Dzire
+</option>
+
+<option value="Suzuki Ertiga">
+Suzuki Ertiga
+</option>
+
+<option value="Suzuki Every">
+Suzuki Every
+</option>
+
+<option value="Other">
+Other
+</option>
+
+</select>
+
+</div>
+
+
+
+<!-- VARIANT -->
+
+<div class="form-group">
+
+<label for="variant">
+Variant / Model
+</label>
+
+<input
+    type="text"
+    id="variant"
+    name="variant"
+    placeholder="Example: Swift GLX"
+>
+
+</div>
+
+
+
+<!-- REQUEST TYPE -->
+
+<div class="form-group">
+
+<label for="request_type">
+What do you need?
+</label>
+
+<select
+    id="request_type"
+    name="request_type"
+>
+
+<option value="New Vehicle Inquiry">
+New Vehicle Inquiry
+</option>
+
+<option value="Test Drive">
+Test Drive
+</option>
+
+<option value="Minor Service">
+Minor Service
+</option>
+
+<option value="Full Service">
+Full Service
+</option>
+
+<option value="Maintenance">
+Maintenance
+</option>
+
+<option value="Spare Parts">
+Spare Parts
+</option>
+
+<option value="General Inquiry">
+General Inquiry
+</option>
+
+</select>
+
+</div>
+
+
+
+<!-- CUSTOMER MESSAGE -->
+
+<div class="form-group">
+
+<label for="message">
+Additional Message
+</label>
+
+<textarea
+    id="message"
+    name="message"
+    placeholder="Please write your requirement..."
+></textarea>
+
+</div>
+
+
+
+<!-- AUTOMATIC CUSTOMER RECORD INFORMATION -->
+
+<input
+    type="hidden"
+    name="lead_source"
+    value="Suzuki Kohat Motors Landing Page"
+>
+
+<input
+    type="hidden"
+    name="website"
+    value="https://ibrar0064.github.io/suzuki-landing/"
+>
+
+<input
+    type="hidden"
+    name="submission_time"
+    id="submission_time"
+>
+
+<input
+    type="hidden"
+    name="lead_id"
+    id="lead_id"
+>
+
+<input
+    type="hidden"
+    name="lead_priority"
+    id="lead_priority"
+>
+
+<input
+    type="hidden"
+    name="_subject"
+    value="New Suzuki Kohat Motors Customer Lead"
+>
+
+
+<!-- SPAM PROTECTION -->
+
+<input
+    type="text"
+    name="_gotcha"
+    style="display:none"
+    tabindex="-1"
+    autocomplete="off"
+>
+
+
+<!-- SUBMIT BUTTON -->
+
+<button
+    type="submit"
+    class="submit-button"
+    id="submitButton"
+>
+    Confirm My Booking
+</button>
+
+
+<!-- SUCCESS / ERROR MESSAGE -->
+
+<div
+    id="statusMessage"
+    class="status-message"
+></div>
+
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- FEATURES -->
 
 <section class="features">
-  <div class="container">
-    <h2>Why the Suzuki Swift?</h2>
-    <div class="grid">
-      <div class="card"><h3>Striking Design</h3><p>A bold, sporty look that turns heads on every road.</p></div>
-      <div class="card"><h3>Drive Ahead</h3><p>Responsive performance for city streets and highways.</p></div>
-      <div class="card"><h3>Smart Comfort</h3><p>Modern interior with features designed for everyday ease.</p></div>
-      <div class="card"><h3>Trusted Dealer</h3><p>Suzuki Kohat Motors – your local destination for reliable service.</p></div>
-    </div>
-  </div>
+
+<div class="container">
+
+<h2>
+Why Choose Suzuki Kohat Motors?
+</h2>
+
+
+<div class="feature-grid">
+
+
+<div class="feature">
+
+<h3>
+🚗 Suzuki Vehicles
+</h3>
+
+<p>
+Explore Suzuki vehicles and find the right model for your needs.
+</p>
+
+</div>
+
+
+<div class="feature">
+
+<h3>
+🔧 Professional Service
+</h3>
+
+<p>
+Minor service, full service and vehicle maintenance.
+</p>
+
+</div>
+
+
+<div class="feature">
+
+<h3>
+📞 Customer Support
+</h3>
+
+<p>
+Our team will contact you regarding your request.
+</p>
+
+</div>
+
+
+</div>
+
+</div>
+
 </section>
 
-<section class="form-section" id="booking">
-  <div class="container">
-    <div class="form-box">
-      <h2>Reserve Your Suzuki Swift</h2>
-      <p>Fill in your details and our team will call you to confirm your booking.</p>
-      <form onsubmit="event.preventDefault(); alert('Thank you! We will contact you shortly.');">
-        <div class="form-group"><input type="text" placeholder="Full Name" required></div>
-        <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
-        <div class="form-group"><input type="date" placeholder="Preferred Date"></div>
-        <div class="form-group"><textarea rows="3" placeholder="Message (optional)"></textarea></div>
-        <button type="submit" class="btn btn-primary">Confirm My Booking</button>
-      </form>
-      <p style="margin-top:20px;">Or call directly: <a href="tel:03320583940" style="color:#4db8ff;">0332 0583940</a></p>
-    </div>
-  </div>
-</section>
 
-<section class="contact">
-  <div class="container">
-    <h2>Visit Suzuki Kohat Motors</h2>
-    <p>📍 Main Indus Highway Near Pindi Pull, Kohat</p>
-    <p>📞 <a href="tel:03320583940">0332 0583940</a></p>
-    <p>🕒 Open Mon–Sat: 9:00 AM – 7:00 PM</p>
-    <p style="margin-top:20px;"><a href="https://maps.google.com/?q=Suzuki+Kohot+Motors" target="_blank">Get Directions →</a></p>
-  </div>
-</section>
+
+<!-- FOOTER -->
 
 <footer>
-  <p>© 2025 Suzuki Kohat Motors. All rights reserved.</p>
+
+<p>
+<strong>Suzuki Kohat Motors</strong>
+</p>
+
+<p>
+Customer Booking & Support
+</p>
+
 </footer>
+
+
+
+<!-- CUSTOMER LEAD AGENT -->
+
+<script>
+
+/*
+====================================================
+SUZUKI KOHAT MOTORS
+CUSTOMER LEAD AGENT
+====================================================
+*/
+
+
+const form =
+    document.getElementById("customerForm");
+
+const submitButton =
+    document.getElementById("submitButton");
+
+const statusMessage =
+    document.getElementById("statusMessage");
+
+const leadID =
+    document.getElementById("lead_id");
+
+const submissionTime =
+    document.getElementById("submission_time");
+
+const leadPriority =
+    document.getElementById("lead_priority");
+
+
+
+/*
+----------------------------------------------------
+GENERATE UNIQUE LEAD ID
+Example:
+SKM-20260915-4832
+----------------------------------------------------
+*/
+
+function generateLeadID() {
+
+    const date = new Date();
+
+    const random =
+        Math.floor(
+            1000 + Math.random() * 9000
+        );
+
+    return (
+        "SKM-" +
+        date.getFullYear() +
+        String(date.getMonth() + 1)
+            .padStart(2, "0") +
+        String(date.getDate())
+            .padStart(2, "0") +
+        "-" +
+        random
+    );
+
+}
+
+
+
+/*
+----------------------------------------------------
+LEAD PRIORITY
+----------------------------------------------------
+*/
+
+function calculateLeadPriority() {
+
+    const request =
+        document.getElementById(
+            "request_type"
+        ).value;
+
+
+    const vehicle =
+        document.getElementById(
+            "vehicle"
+        ).value;
+
+
+    /*
+    HIGH PRIORITY
+    */
+
+    if (
+        request === "Test Drive" ||
+        request === "New Vehicle Inquiry"
+    ) {
+
+        return "HIGH";
+
+    }
+
+
+    /*
+    MEDIUM PRIORITY
+    */
+
+    if (
+        request === "Full Service" ||
+        request === "Maintenance"
+    ) {
+
+        return "MEDIUM";
+
+    }
+
+
+    if (vehicle !== "") {
+
+        return "MEDIUM";
+
+    }
+
+
+    /*
+    NORMAL
+    */
+
+    return "NORMAL";
+
+}
+
+
+
+/*
+----------------------------------------------------
+FORM SUBMISSION
+----------------------------------------------------
+*/
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        /*
+        Generate Lead ID
+        */
+
+        const id =
+            generateLeadID();
+
+        leadID.value = id;
+
+
+        /*
+        Submission Date & Time
+        */
+
+        const now =
+            new Date();
+
+        submissionTime.value =
+            now.toLocaleString();
+
+
+        /*
+        Calculate Priority
+        */
+
+        leadPriority.value =
+            calculateLeadPriority();
+
+
+        /*
+        Loading state
+        */
+
+        submitButton.disabled = true;
+
+        submitButton.textContent =
+            "Sending Customer Record...";
+
+
+        statusMessage.className =
+            "status-message";
+
+        statusMessage.style.display =
+            "none";
+
+
+        try {
+
+
+            /*
+            Send customer record
+            to Formspree
+            */
+
+            const response =
+                await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+
+                        body:
+                            new FormData(form),
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            /*
+            SUCCESS
+            */
+
+            if (response.ok) {
+
+
+                statusMessage.className =
+                    "status-message success";
+
+
+                statusMessage.innerHTML =
+
+                    "✅ Thank you! Your booking request has been received.<br><br>" +
+
+                    "Your Lead ID is: <strong>" +
+                    id +
+                    "</strong><br><br>" +
+
+                    "Our Suzuki Kohat Motors team will contact you shortly.";
+
+
+                statusMessage.style.display =
+                    "block";
+
+
+                /*
+                Clear form
+                */
+
+                form.reset();
+
+
+                /*
+                Button
+                */
+
+                submitButton.disabled =
+                    false;
+
+                submitButton.textContent =
+                    "Booking Submitted";
+
+
+            }
+
+            /*
+            ERROR
+            */
+
+            else {
+
+                const data =
+                    await response.json()
+                        .catch(() => null);
+
+
+                throw new Error(
+                    data?.error ||
+                    "Submission failed"
+                );
+
+            }
+
+
+        }
+
+        catch (error) {
+
+
+            console.error(
+                "Customer form error:",
+                error
+            );
+
+
+            statusMessage.className =
+                "status-message error";
+
+
+            statusMessage.innerHTML =
+
+                "❌ Sorry, we could not send your request.<br><br>" +
+
+                "Please try again.";
+
+
+            statusMessage.style.display =
+                "block";
+
+
+            submitButton.disabled =
+                false;
+
+
+            submitButton.textContent =
+                "Confirm My Booking";
+
+        }
+
+    }
+);
+
+
+
+/*
+----------------------------------------------------
+PREVENT PAST DATES
+----------------------------------------------------
+*/
+
+const dateInput =
+    document.getElementById(
+        "preferred_date"
+    );
+
+
+const today =
+    new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+dateInput.min = today;
+
+
+</script>
+
 
 </body>
 </html>
