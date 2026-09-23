@@ -1,0 +1,201 @@
+name: Suzuki AI Landing Page Assistant
+
+on:
+  workflow_dispatch:
+    inputs:
+      offer_text:
+        description: "Optional verified offer text. Leave blank to let Gemini read the Facebook source."
+        required: false
+        type: string
+      apply_update:
+        description: "Apply Gemini's verified change to index.html"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-website:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check required files
+        run: |
+          test -s index.html
+          test -s system_prompt.txt
+          echo "Required files found."
+
+      - name: Ask Gemini to review the offer
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OFFER_TEXT: ${{ inputs.offer_text }}
+          APPLY_UPDATE: ${{ inputs.apply_update }}
+          SOURCE_URL: "https://www.facebook.com/share/1CLZ96H3Zq/"
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          import urllib.error
+          import urllib.request
+
+          api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+          offer = os.environ.get("OFFER_TEXT", "").strip()
+          source_url = os.environ.get("SOURCE_URL", "").strip()
+          apply_update = os.environ.get("APPLY_UPDATE", "false").lower() == "true"
+
+          if not api_key:
+              raise RuntimeError("GEMINI_API_KEY secret is missing.")
+
+          with open("system_prompt.txt", encoding="utf-8") as f:
+              instructions = f.read()
+
+          with open("index.html", encoding="utf-8") as f:
+              current_html = f.read()
+
+          source_instruction = f"""
+          Facebook source:
+          {source_url}
+
+          If the source URL is publicly accessible, use URL Context to inspect it.
+          If it is not accessible, do NOT invent an offer.
+          """
+
+          if offer:
+              source_instruction += f"""
+          The user also supplied this offer information. Treat it as the primary
+          source, but still follow the no-invention rules:
+          {offer}
+          """
+
+          prompt = f"""
+          You are the Suzuki Landing Page maintenance agent.
+
+          WEBSITE INSTRUCTIONS:
+          {instructions}
+
+          {source_instruction}
+
+          CURRENT WEBSITE:
+          {current_html}
+
+          TASK:
+          1. Identify only verified customer-facing Suzuki offer information.
+          2. If there is no new, clearly verified offer, return exactly:
+             NO_VERIFIED_OFFER
+          3. If a verified offer exists, update the existing HTML minimally.
+          4. Preserve the existing design, booking form, JavaScript, Formspree
+             endpoint, contact information, responsive behavior, and unrelated
+             sections.
+          5. Never invent prices, discounts, dates, specifications, features,
+             contact details, or terms.
+          6. Return ONLY the complete index.html, with no Markdown and no code fence.
+          """
+
+          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent"
+
+          payload = {
+              "contents": [
+                  {
+                      "role": "user",
+                      "parts": [{"text": prompt}]
+                  }
+              ],
+              "tools": [{"url_context": {}}]
+          }
+
+          request = urllib.request.Request(
+              url,
+              data=json.dumps(payload).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": api_key
+              },
+              method="POST"
+          )
+
+          try:
+              with urllib.request.urlopen(request, timeout=240) as response:
+                  raw = response.read().decode("utf-8")
+          except urllib.error.HTTPError as error:
+              body = error.read().decode("utf-8", errors="replace")
+              print(body)
+              raise RuntimeError(f"Gemini API returned HTTP {error.code}")
+
+          data = json.loads(raw)
+          candidates = data.get("candidates") or []
+          if not candidates:
+              raise RuntimeError("Gemini returned no candidates.")
+
+          parts = candidates[0].get("content", {}).get("parts", [])
+          generated = "".join(
+              part.get("text", "") for part in parts
+          ).strip()
+
+          if generated == "NO_VERIFIED_OFFER":
+              print("NO_VERIFIED_OFFER")
+              print("No verified offer was found. No website change will be made.")
+              raise SystemExit(0)
+
+          generated = re.sub(r"^\s*```(?:html|HTML)?\s*", "", generated)
+          generated = re.sub(r"\s*```\s*$", "", generated).strip()
+
+          html_lower = generated.lower()
+
+          for marker in ("<html", "</html>", "<body", "</body>"):
+              if marker not in html_lower:
+                  raise RuntimeError(f"Gemini output is missing {marker}")
+
+          if "formspree.io/f/xaeyknoa" not in html_lower:
+              raise RuntimeError("Safety check failed: Formspree endpoint was removed.")
+
+          if len(generated) < 5000:
+              raise RuntimeError("Safety check failed: generated HTML is unexpectedly small.")
+
+          with open("gemini_output.html", "w", encoding="utf-8") as f:
+              f.write(generated)
+
+          print("Gemini generated valid HTML.")
+          print(f"Apply update: {apply_update}")
+          PY
+
+      - name: Apply website update
+        if: ${{ inputs.apply_update == true }}
+        run: |
+          test -s gemini_output.html
+          cp gemini_output.html index.html
+
+          grep -qi "<html" index.html
+          grep -qi "</html>" index.html
+          grep -qi "<body" index.html
+          grep -qi "</body>" index.html
+          grep -q "formspree.io/f/xaeyknoa" index.html
+
+          echo "Website validation passed."
+
+      - name: Show test result
+        if: ${{ inputs.apply_update == false }}
+        run: |
+          echo "TEST MODE: website was not changed."
+          echo "Set 'Apply Gemini's verified change to index.html' to true for the real update."
+
+      - name: Commit and push
+        if: ${{ inputs.apply_update == true }}
+        run: |
+          git config user.name "Suzuki AI Website Agent"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add index.html
+
+          if git diff --cached --quiet; then
+            echo "No website changes detected."
+            exit 0
+          fi
+
+          git commit -m "Update Suzuki landing page with verified offer"
+          git push
