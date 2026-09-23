@@ -140,6 +140,8 @@ jobs:
           if generated == "NO_VERIFIED_OFFER":
               print("NO_VERIFIED_OFFER")
               print("No verified offer was found. No website change will be made.")
+              with open("NO_VERIFIED_OFFER", "w", encoding="utf-8") as f:
+                  f.write("No verified offer found.")
               raise SystemExit(0)
 
           generated = re.sub(r"^\s*```(?:html|HTML)?\s*", "", generated)
@@ -167,6 +169,11 @@ jobs:
       - name: Apply website update
         if: ${{ inputs.apply_update == true }}
         run: |
+          if [ -f NO_VERIFIED_OFFER ]; then
+            echo "No verified offer found. Nothing to update."
+            exit 0
+          fi
+
           test -s gemini_output.html
           cp gemini_output.html index.html
 
@@ -181,6 +188,11 @@ jobs:
       - name: Show test result
         if: ${{ inputs.apply_update == false }}
         run: |
+          if [ -f NO_VERIFIED_OFFER ]; then
+            echo "TEST MODE: no verified offer found. Website was not changed."
+            exit 0
+          fi
+
           echo "TEST MODE: website was not changed."
           echo "Set 'Apply Gemini's verified change to index.html' to true for the real update."
 
