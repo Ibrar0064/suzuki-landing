@@ -16,24 +16,28 @@
 <label for="dhow">Dhow Cruise Price AED</label><input id="dhow" inputmode="decimal">
 <label for="extraHour">Extra Hour Price AED</label><input id="extraHour" inputmode="decimal">
 <label for="comments">Comments / Extra Information</label><textarea id="comments" placeholder="Add any additional details here..."></textarea></section>
-<button type="submit">Submit via WhatsApp</button><p class="note">Thank you for sharing your rates and information.</p></form></main>
+<button type="submit">1. Send Price Details via WhatsApp</button><button type="button" id="shareFiles" style="margin-top:14px;background:linear-gradient(#d8f4ff,#8bdcff);color:#123e70;box-shadow:0 4px 0 #4ba9d6">2. Share Attachments</button><p class="hint" style="text-align:center;line-height:1.6">First send the price details to the supplier chat. Return to this page, then tap “Share Attachments” and choose the same WhatsApp chat.</p><p class="note">Thank you for sharing your rates and information.</p></form></main>
 <script>
-document.getElementById('priceForm').addEventListener('submit',async e=>{
- e.preventDefault();
+function buildPriceMessage(){
  const fields=[['Vehicle Brand','brand'],['Vehicle Model / Year','model'],['Arrival Price in Dubai City / Beach AED','arrivalDubai'],['Arrival Price to / from other Emirates AED','arrivalEmirates'],['Departure Price in Dubai City / Beach AED','departureDubai'],['Departure Price Dubai to / from other Emirates AED','departureEmirates'],['Half Day Price AED','halfDay'],['Full Day Dubai Price AED','fullDubai'],['Full Day Abu Dhabi Price AED','fullAbuDhabi'],['Hotel to Hotel Price AED','hotel'],['Dhow Cruise Price AED','dhow'],['Extra Hour Price AED','extraHour'],['Comments / Extra Information','comments']];
  const nl=String.fromCharCode(10);
- const body=['SUPPLIER PRICE INFORMATION','==============================','',...fields.map(([label,id])=>label+':'+nl+(document.getElementById(id).value.trim()||'Not provided')),'','Thank you for sharing your rates and information.'].join(nl);
- const files=[...document.getElementById('files').files];
+ return ['SUPPLIER PRICE INFORMATION','==============================','',...fields.map(([label,id])=>label+':'+nl+(document.getElementById(id).value.trim()||'Not provided')),'','Thank you for sharing your rates and information.'].join(nl);
+}
+document.getElementById('priceForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const body=buildPriceMessage();
  try{
-  if(files.length&&navigator.share&&navigator.canShare&&navigator.canShare({files})){
-   await navigator.share({title:'Supplier Price Information',text:body,files});
-  }else if(navigator.share){
-   await navigator.share({title:'Supplier Price Information',text:body});
-   if(files.length)alert('Your browser cannot share these files together. Please attach the selected files manually in WhatsApp.');
-  }else{
-   await navigator.clipboard.writeText(body);
-   alert('Details copied. Open WhatsApp, paste the details and attach your files manually.');
-  }
- }catch(err){if(err.name!=='AbortError')alert('Sharing could not be completed. Please try again.');}
+  if(navigator.share){await navigator.share({title:'Supplier Price Information',text:body});}
+  else{await navigator.clipboard.writeText(body);alert('Price details copied. Open the supplier WhatsApp chat and paste the message.');}
+ }catch(err){if(err.name!=='AbortError')alert('Could not share the price details. Please try again.');}
+});
+document.getElementById('shareFiles').addEventListener('click',async()=>{
+ const files=[...document.getElementById('files').files];
+ if(!files.length){alert('Please select at least one attachment first.');return;}
+ if(!navigator.share||!navigator.canShare||!navigator.canShare({files})){
+  alert('This browser cannot share the selected files directly. Please attach them manually in WhatsApp.');return;
+ }
+ try{await navigator.share({title:'Supplier Attachments',files});}
+ catch(err){if(err.name!=='AbortError')alert('Could not share the attachments. Please try again.');}
 });
 </script></body></html>
