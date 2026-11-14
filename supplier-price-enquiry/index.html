@@ -16,20 +16,18 @@
 <label for="dhow">Dhow Cruise Price AED</label><input id="dhow" inputmode="decimal">
 <label for="extraHour">Extra Hour Price AED</label><input id="extraHour" inputmode="decimal">
 <label for="comments">Comments / Extra Information</label><textarea id="comments" placeholder="Add any additional details here..."></textarea></section>
-<button type="submit">1. Send Price Details via WhatsApp</button><button type="button" id="shareFiles" style="margin-top:14px;background:linear-gradient(#d8f4ff,#8bdcff);color:#123e70;box-shadow:0 4px 0 #4ba9d6">2. Share Attachments</button><p class="hint" style="text-align:center;line-height:1.6">First send the price details to the supplier chat. Return to this page, then tap “Share Attachments” and choose the same WhatsApp chat.</p><p class="note">Thank you for sharing your rates and information.</p></form></main>
+<button type="submit">1. Open WhatsApp with Price Details</button><button type="button" id="shareFiles" style="margin-top:14px;background:linear-gradient(#d8f4ff,#8bdcff);color:#123e70;box-shadow:0 4px 0 #4ba9d6">2. Share Attachments</button><p class="hint" style="text-align:center;line-height:1.6">First send the price details to the supplier chat. Return to this page, then tap “Share Attachments” and choose the same WhatsApp chat.</p><p class="note">Thank you for sharing your rates and information.</p></form></main>
 <script>
 function buildPriceMessage(){
  const fields=[['Vehicle Brand','brand'],['Vehicle Model / Year','model'],['Arrival Price in Dubai City / Beach AED','arrivalDubai'],['Arrival Price to / from other Emirates AED','arrivalEmirates'],['Departure Price in Dubai City / Beach AED','departureDubai'],['Departure Price Dubai to / from other Emirates AED','departureEmirates'],['Half Day Price AED','halfDay'],['Full Day Dubai Price AED','fullDubai'],['Full Day Abu Dhabi Price AED','fullAbuDhabi'],['Hotel to Hotel Price AED','hotel'],['Dhow Cruise Price AED','dhow'],['Extra Hour Price AED','extraHour'],['Comments / Extra Information','comments']];
  const nl=String.fromCharCode(10);
  return ['SUPPLIER PRICE INFORMATION','==============================','',...fields.map(([label,id])=>label+':'+nl+(document.getElementById(id).value.trim()||'Not provided')),'','Thank you for sharing your rates and information.'].join(nl);
 }
-document.getElementById('priceForm').addEventListener('submit',async e=>{
+document.getElementById('priceForm').addEventListener('submit',e=>{
  e.preventDefault();
  const body=buildPriceMessage();
- try{
-  if(navigator.share){await navigator.share({title:'Supplier Price Information',text:body});}
-  else{await navigator.clipboard.writeText(body);alert('Price details copied. Open the supplier WhatsApp chat and paste the message.');}
- }catch(err){if(err.name!=='AbortError')alert('Could not share the price details. Please try again.');}
+ const whatsappUrl='https://wa.me/?text='+encodeURIComponent(body);
+ window.location.href=whatsappUrl;
 });
 document.getElementById('shareFiles').addEventListener('click',async()=>{
  const files=[...document.getElementById('files').files];
