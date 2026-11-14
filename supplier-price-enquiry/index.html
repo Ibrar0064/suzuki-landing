@@ -22,10 +22,10 @@
 <p>Your price details will be saved in a small text file and shared together with the original documents below.</p>
 <div id="reviewDetails" style="white-space:pre-wrap;background:#fff;padding:12px;border-radius:10px;max-height:240px;overflow:auto"></div>
 <h3>Attachments to share</h3><ul id="reviewFiles"></ul>
-<p class="hint">On the Android share screen, choose WhatsApp and select the supplier chat. Before pressing Send in WhatsApp, check that the price-details text file and all original attachments are included.</p>
+<p class="hint">The form combines the price details and original documents into one ZIP attachment. On the Android share screen, choose WhatsApp and select the supplier chat.</p>
 <button type="button" id="shareAll">Share Price Details + Attachments Together</button>
 <button type="button" id="editForm" style="margin-top:12px;background:#fff;color:#123e70;box-shadow:none;border:1px solid #5bb6ed">Back to Edit</button>
-<p class="hint">This uses Android's share sheet. WhatsApp may show the items as attachments rather than placing the prices in the message text.</p>
+<p class="hint">WhatsApp receives one ZIP attachment. The supplier must open the ZIP to view the price details and original documents.</p>
 </section>
 <p class="note">Thank you for sharing your rates and information.</p></form></main>
 <script>
@@ -50,20 +50,46 @@ form.addEventListener('submit',e=>{
  review.scrollIntoView({behavior:'smooth',block:'start'});
 });
 document.getElementById('editForm').addEventListener('click',()=>{review.hidden=true;document.getElementById('files').focus();});
+function crc32(bytes){
+ let crc=0xffffffff;
+ for(let i=0;i<bytes.length;i++){crc^=bytes[i];for(let j=0;j<8;j++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}
+ return (crc^0xffffffff)>>>0;
+}
+function makeZip(files){
+ const enc=new TextEncoder(),local=[],central=[];let offset=0;
+ const now=new Date(),dosTime=(now.getHours()<<11)|(now.getMinutes()<<5)|(Math.floor(now.getSeconds()/2)),dosDate=((Math.max(1980,now.getFullYear())-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+ const u16=n=>{const a=new Uint8Array(2);new DataView(a.buffer).setUint16(0,n,true);return a;};
+ const u32=n=>{const a=new Uint8Array(4);new DataView(a.buffer).setUint32(0,n>>>0,true);return a;};
+ const join=parts=>{const size=parts.reduce((s,p)=>s+p.length,0),out=new Uint8Array(size);let at=0;for(const p of parts){out.set(p,at);at+=p.length;}return out;};
+ for(const file of files){
+  const name=enc.encode(file.name),data=new Uint8Array(await file.arrayBuffer()),crc=crc32(data);
+  const lh=join([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(dosTime),u16(dosDate),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name]);
+  local.push(lh,data);
+  const ch=join([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(dosTime),u16(dosDate),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]);
+  central.push(ch);offset+=lh.length+data.length;
+ }
+ const centralBytes=join(central),localBytes=join(local);
+ const end=join([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(centralBytes.length),u32(localBytes.length),u16(0)]);
+ return new Blob([localBytes,centralBytes,end],{type:'application/zip'});
+}
 document.getElementById('shareAll').addEventListener('click',async()=>{
  const originals=[...document.getElementById('files').files];
  if(!originals.length){alert('Please select at least one original attachment.');return;}
- const details=new Blob([buildPriceMessage()],{type:'text/plain;charset=utf-8'});
- const detailsFile=new File([details],'Supplier-Price-Details.txt',{type:'text/plain'});
- const shareFiles=[detailsFile,...originals];
- if(!navigator.share||!navigator.canShare||!navigator.canShare({files:shareFiles})){
-  alert('This phone/browser cannot share all these files together. No items have been sent. Please try Chrome on Android, or share the price-details text file and original documents manually.');
-  return;
- }
+ const button=document.getElementById('shareAll');
+ button.disabled=true;button.textContent='Preparing one ZIP attachment...';
  try{
-  await navigator.share({title:'Supplier Price Details and Attachments',files:shareFiles});
+  const details=new File([buildPriceMessage()],'Supplier-Price-Details.txt',{type:'text/plain'});
+  const zipBlob=await makeZip([details,...originals]);
+  const zipFile=new File([zipBlob],'Supplier-Price-Details-and-Documents.zip',{type:'application/zip'});
+  if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[zipFile]})){
+   alert('This phone/browser cannot share a ZIP file. Please try Chrome on Android. No items have been sent.');
+   return;
+  }
+  await navigator.share({title:'Supplier Price Details and Documents',files:[zipFile]});
  }catch(err){
-  if(err.name!=='AbortError')alert('Sharing did not complete. Please try again and check the WhatsApp chat before sending.');
+  if(err.name!=='AbortError')alert('Sharing did not complete. Please try again. If WhatsApp opens, check that the ZIP attachment is present before pressing Send.');
+ }finally{
+  button.disabled=false;button.textContent='Share Price Details + Attachments Together';
  }
 });
 </script></body></html>
