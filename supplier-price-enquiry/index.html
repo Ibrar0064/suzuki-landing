@@ -16,7 +16,18 @@
 <label for="dhow">Dhow Cruise Price AED</label><input id="dhow" inputmode="decimal">
 <label for="extraHour">Extra Hour Price AED</label><input id="extraHour" inputmode="decimal">
 <label for="comments">Comments / Extra Information</label><textarea id="comments" placeholder="Add any additional details here..."></textarea></section>
-<button type="submit">1. Open WhatsApp with Price Details</button><button type="button" id="shareFiles" style="margin-top:14px;background:linear-gradient(#d8f4ff,#8bdcff);color:#123e70;box-shadow:0 4px 0 #4ba9d6">2. Share Attachments</button><p class="hint" style="text-align:center;line-height:1.6">First send the price details to the supplier chat. Return to this page, then tap “Share Attachments” and choose the same WhatsApp chat.</p><p class="note">Thank you for sharing your rates and information.</p></form></main>
+<button type="submit">Review Price Details &amp; Attachments</button>
+<section id="reviewPanel" class="card" hidden aria-live="polite">
+<h2 style="margin-top:0">Confirm Before Sharing</h2>
+<p>Your price details will be saved in a small text file and shared together with the original documents below.</p>
+<div id="reviewDetails" style="white-space:pre-wrap;background:#fff;padding:12px;border-radius:10px;max-height:240px;overflow:auto"></div>
+<h3>Attachments to share</h3><ul id="reviewFiles"></ul>
+<p class="hint">On the Android share screen, choose WhatsApp and select the supplier chat. Before pressing Send in WhatsApp, check that the price-details text file and all original attachments are included.</p>
+<button type="button" id="shareAll">Share Price Details + Attachments Together</button>
+<button type="button" id="editForm" style="margin-top:12px;background:#fff;color:#123e70;box-shadow:none;border:1px solid #5bb6ed">Back to Edit</button>
+<p class="hint">This uses Android's share sheet. WhatsApp may show the items as attachments rather than placing the prices in the message text.</p>
+</section>
+<p class="note">Thank you for sharing your rates and information.</p></form></main>
 <script>
 function buildPriceMessage(){
  const fields=[['Vehicle Brand','brand'],['Vehicle Model / Year','model'],['Arrival Price in Dubai City / Beach AED','arrivalDubai'],['Arrival Price to / from other Emirates AED','arrivalEmirates'],['Departure Price in Dubai City / Beach AED','departureDubai'],['Departure Price Dubai to / from other Emirates AED','departureEmirates'],['Half Day Price AED','halfDay'],['Full Day Dubai Price AED','fullDubai'],['Full Day Abu Dhabi Price AED','fullAbuDhabi'],['Hotel to Hotel Price AED','hotel'],['Dhow Cruise Price AED','dhow'],['Extra Hour Price AED','extraHour'],['Comments / Extra Information','comments']];
@@ -24,19 +35,35 @@ function buildPriceMessage(){
  const completed=fields.map(([label,id])=>({label,value:document.getElementById(id).value.trim()})).filter(item=>item.value!=='');
  return ['SUPPLIER PRICE INFORMATION','==============================','',...completed.map(item=>item.label+':'+nl+item.value),'','Thank you for sharing your rates and information.'].join(nl);
 }
-document.getElementById('priceForm').addEventListener('submit',e=>{
+const form=document.getElementById('priceForm');
+const review=document.getElementById('reviewPanel');
+form.addEventListener('submit',e=>{
  e.preventDefault();
- const body=buildPriceMessage();
- const whatsappUrl='https://wa.me/?text='+encodeURIComponent(body);
- window.location.href=whatsappUrl;
-});
-document.getElementById('shareFiles').addEventListener('click',async()=>{
  const files=[...document.getElementById('files').files];
- if(!files.length){alert('Please select at least one attachment first.');return;}
- if(!navigator.share||!navigator.canShare||!navigator.canShare({files})){
-  alert('This browser cannot share the selected files directly. Please attach them manually in WhatsApp.');return;
+ if(!files.length){alert('Please select at least one attachment. The price details and original file(s) will be shared together.');document.getElementById('files').focus();return;}
+ const message=buildPriceMessage();
+ document.getElementById('reviewDetails').textContent=message;
+ const list=document.getElementById('reviewFiles');
+ list.replaceChildren();
+ files.forEach(file=>{const li=document.createElement('li');li.textContent=file.name+' ('+Math.ceil(file.size/1024)+' KB)';list.appendChild(li);});
+ review.hidden=false;
+ review.scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('editForm').addEventListener('click',()=>{review.hidden=true;document.getElementById('files').focus();});
+document.getElementById('shareAll').addEventListener('click',async()=>{
+ const originals=[...document.getElementById('files').files];
+ if(!originals.length){alert('Please select at least one original attachment.');return;}
+ const details=new Blob([buildPriceMessage()],{type:'text/plain;charset=utf-8'});
+ const detailsFile=new File([details],'Supplier-Price-Details.txt',{type:'text/plain'});
+ const shareFiles=[detailsFile,...originals];
+ if(!navigator.share||!navigator.canShare||!navigator.canShare({files:shareFiles})){
+  alert('This phone/browser cannot share all these files together. No items have been sent. Please try Chrome on Android, or share the price-details text file and original documents manually.');
+  return;
  }
- try{await navigator.share({title:'Supplier Attachments',files});}
- catch(err){if(err.name!=='AbortError')alert('Could not share the attachments. Please try again.');}
+ try{
+  await navigator.share({title:'Supplier Price Details and Attachments',files:shareFiles});
+ }catch(err){
+  if(err.name!=='AbortError')alert('Sharing did not complete. Please try again and check the WhatsApp chat before sending.');
+ }
 });
 </script></body></html>
