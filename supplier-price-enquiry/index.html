@@ -23,7 +23,7 @@
 <div id="reviewDetails" style="white-space:pre-wrap;background:#fff;padding:12px;border-radius:10px;max-height:240px;overflow:auto"></div>
 <h3>Attachments to share</h3><ul id="reviewFiles"></ul>
 <p class="hint">The form combines the price details and original documents into one ZIP attachment. On the Android share screen, choose WhatsApp and select the supplier chat.</p>
-<button type="button" id="shareAll">Share Price Details + Attachments Together</button>
+<button type="button" id="shareAll">Download Price Details + Attachments (ZIP)</button>
 <button type="button" id="editForm" style="margin-top:12px;background:#fff;color:#123e70;box-shadow:none;border:1px solid #5bb6ed">Back to Edit</button>
 <p class="hint">WhatsApp receives one ZIP attachment. The supplier must open the ZIP to view the price details and original documents.</p>
 </section>
@@ -76,20 +76,19 @@ document.getElementById('shareAll').addEventListener('click',async()=>{
  const originals=[...document.getElementById('files').files];
  if(!originals.length){alert('Please select at least one original attachment.');return;}
  const button=document.getElementById('shareAll');
- button.disabled=true;button.textContent='Preparing one ZIP attachment...';
+ button.disabled=true;button.textContent='Preparing ZIP download...';
  try{
   const details=new File([buildPriceMessage()],'Supplier-Price-Details.txt',{type:'text/plain'});
   const zipBlob=await makeZip([details,...originals]);
-  const zipFile=new File([zipBlob],'Supplier-Price-Details-and-Documents.zip',{type:'application/zip'});
-  if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[zipFile]})){
-   alert('This phone/browser cannot share a ZIP file. Please try Chrome on Android. No items have been sent.');
-   return;
-  }
-  await navigator.share({title:'Supplier Price Details and Documents',files:[zipFile]});
+  const url=URL.createObjectURL(zipBlob);
+  const a=document.createElement('a');a.href=url;a.download='Supplier-Price-Details-and-Documents.zip';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  alert('ZIP downloaded. Open your Downloads folder, select the ZIP, tap Share, then choose WhatsApp and the supplier chat.');
  }catch(err){
-  if(err.name!=='AbortError')alert('Sharing did not complete. Please try again. If WhatsApp opens, check that the ZIP attachment is present before pressing Send.');
+  alert('ZIP could not be prepared: '+(err.message||'Please try again.'));
  }finally{
-  button.disabled=false;button.textContent='Share Price Details + Attachments Together';
+  button.disabled=false;button.textContent='Download Price Details + Attachments (ZIP)';
  }
 });
 </script></body></html>
