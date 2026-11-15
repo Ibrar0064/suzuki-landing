@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Supplier Price Form V4</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#dff5ff,#8bd5f4);font-family:Arial,sans-serif;color:#173b60}.wrap{max-width:760px;margin:auto;padding:14px}.hero,.card{background:#ffffffd9;border:1px solid #9bd9f4;border-radius:18px;padding:18px;margin-bottom:13px}.hero{text-align:center}h1{margin:0;font-size:30px}.hero p{margin:8px 0 0}label{display:block;font-weight:bold;margin:12px 0 5px}input,textarea{width:100%;padding:12px;border:1px solid #8bc9ed;border-radius:10px;font-size:16px;background:white}button{width:100%;padding:16px;border:0;border-radius:13px;background:linear-gradient(#9bf06b,#66d52f);font-size:18px;font-weight:bold;color:#174c1a;cursor:pointer}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hint{font-size:13px;color:#52718a}@media(max-width:500px){.grid{grid-template-columns:1fr}}
+</style></head><body><main class="wrap"><header class="hero"><h1>Supplier Price Form</h1><p>Dubai & UAE · Beautiful Image Rate Card</p></header>
+<form id="f"><section class="card"><label>Supplier attachment(s)</label><input id="files" type="file" multiple required><p class="hint">Original files will remain inside the ZIP.</p>
+<div class="grid"><div><label>Vehicle Brand *</label><input id="brand" required placeholder="Toyota"></div><div><label>Vehicle Model / Year *</label><input id="model" required placeholder="Hiace 2024"></div></div>
+<label>Airport Parking Fee AED</label><input id="airport" inputmode="decimal" placeholder="AED"><label>Arrival Dubai City / Beach AED</label><input id="arrdub" inputmode="decimal" placeholder="AED"><label>Arrival Other Emirates AED</label><input id="arrem" inputmode="decimal" placeholder="AED"><label>Departure Dubai City / Beach AED</label><input id="depdub" inputmode="decimal" placeholder="AED"><label>Departure Dubai to Other Emirates AED</label><input id="depem" inputmode="decimal" placeholder="AED"><label>Half Day Price AED</label><input id="half" inputmode="decimal" placeholder="AED"><label>Full Day Dubai Price AED</label><input id="fulldub" inputmode="decimal" placeholder="AED"><label>Full Day Abu Dhabi Price AED</label><input id="fullab" inputmode="decimal" placeholder="AED"><label>Hotel to Hotel Price AED</label><input id="hotel" inputmode="decimal" placeholder="AED"><label>Dhow Cruise Price AED</label><input id="dhow" inputmode="decimal" placeholder="AED"><label>Extra Hour Price AED</label><input id="extra" inputmode="decimal" placeholder="AED">
+<label>Comments / Extra Information</label><textarea id="comments" rows="3" placeholder="Any details..."></textarea></section>
+<button type="submit">Generate Beautiful Image + ZIP</button></form><p class="hint" style="text-align:center">Everything is generated on this device. No database or server saves your form data.</p></main>
+<script>
+const fields=[["Airport Parking Fee AED","airport"],["Arrival Dubai City / Beach AED","arrdub"],["Arrival Other Emirates AED","arrem"],["Departure Dubai City / Beach AED","depdub"],["Departure Dubai to Other Emirates AED","depem"],["Half Day Price AED","half"],["Full Day Dubai Price AED","fulldub"],["Full Day Abu Dhabi Price AED","fullab"],["Hotel to Hotel Price AED","hotel"],["Dhow Cruise Price AED","dhow"],["Extra Hour Price AED","extra"]];
+function val(id){return document.getElementById(id).value.trim()}
+function rows(){return [["Vehicle Brand",val("brand")],["Vehicle Model / Year",val("model")],...fields.map(([a,b])=>[a,val(b)]),["Comments / Extra Information",val("comments")]].filter(x=>x[1])}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function wrapText(ctx,text,max){let words=String(text).split(/\s+/),lines=[],line="";for(let w of words){let test=line?line+" "+w:w;if(ctx.measureText(test).width>max&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);return lines}
+async function makeRateCard(){
+ const data=rows(),canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=900,pad=54,rowH=88,commentRows=[];
+ // determine comment wrapping and card height
+ ctx.font="26px Arial";let comment=data.find(x=>x[0].startsWith("Comments"));
+ let cLines=comment?wrapText(ctx,comment[1],W-2*pad-40):[];
+ const H=280+data.filter(x=>!x[0].startsWith("Comments")&&!x[0].startsWith("Vehicle")).length*rowH+(comment?140+cLines.length*38:0)+260;
+ canvas.width=W;canvas.height=Math.max(1200,H);ctx=canvas.getContext("2d");
+ // background gradient
+ let bg=ctx.createLinearGradient(0,0,W,canvas.height);bg.addColorStop(0,"#eaf7ff");bg.addColorStop(1,"#c9e8ff");ctx.fillStyle=bg;ctx.fillRect(0,0,W,canvas.height);
+ // phone outer frame
+ ctx.fillStyle="#10283e";round(ctx,25,20,W-50,canvas.height-40,58);ctx.fill();
+ ctx.fillStyle="#fff";round(ctx,43,38,W-86,canvas.height-76,42);ctx.fill();
+ ctx.fillStyle="#1d3448";round(ctx,W/2-70,48,140,12,6);ctx.fill();
+ let y=115;ctx.textAlign="center";ctx.fillStyle="#71859a";ctx.font="bold 22px Arial";ctx.fillText("SUPPLIER RATE CARD",W/2,y);y+=54;
+ // title block
+ ctx.fillStyle="#e6f3ff";round(ctx,pad,y,W-2*pad,140,26);ctx.fill();
+ ctx.fillStyle="#1263aa";ctx.font="bold 48px Arial";ctx.fillText(val("brand"),W/2,y+58);
+ ctx.fillStyle="#203b58";ctx.font="bold 32px Arial";ctx.fillText(val("model"),W/2,y+105);y+=165;
+ data.filter(x=>!x[0].startsWith("Vehicle")&&!x[0].startsWith("Comments")).forEach((item,i)=>{
+  ctx.fillStyle=i%2?"#f8fbff":"#edf6ff";round(ctx,pad,y,W-2*pad,rowH-8,16);ctx.fill();
+  ctx.textAlign="left";ctx.fillStyle="#60758b";ctx.font="25px Arial";ctx.fillText(item[0],pad+24,y+35);
+  ctx.textAlign="right";ctx.fillStyle="#143c68";ctx.font="bold 30px Arial";ctx.fillText("AED "+item[1],W-pad-24,y+68);y+=rowH;
+ });
+ if(comment){y+=12;ctx.fillStyle="#eaf5ff";round(ctx,pad,y,W-2*pad,110+cLines.length*38,18);ctx.fill();ctx.textAlign="left";ctx.fillStyle="#56738d";ctx.font="bold 22px Arial";ctx.fillText("COMMENTS / EXTRA INFORMATION",pad+24,y+38);ctx.fillStyle="#244664";ctx.font="25px Arial";cLines.forEach((l,i)=>ctx.fillText(l,pad+24,y+82+i*36));y+=120+cLines.length*38;}
+ ctx.textAlign="center";ctx.fillStyle="#92a4b5";ctx.font="bold 20px Arial";ctx.fillText("UAE SUPPLIER PRICE DETAILS",W/2,canvas.height-105);
+ ctx.fillStyle="#d8e8f4";round(ctx,W/2-70,canvas.height-65,140,8,4);
+ return await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
+}
+function round(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function crc32(bytes){let c=0xffffffff;for(let b of bytes){c^=b;for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xedb88320:0)}return(c^0xffffffff)>>>0}
+async function zip(files){
+ const enc=new TextEncoder(),locals=[],centrals=[];let offset=0;const u16=n=>{let a=new Uint8Array(2);new DataView(a.buffer).setUint16(0,n,true);return a},u32=n=>{let a=new Uint8Array(4);new DataView(a.buffer).setUint32(0,n>>>0,true);return a},join=arr=>{let o=new Uint8Array(arr.reduce((s,a)=>s+a.length,0)),p=0;arr.forEach(a=>{o.set(a,p);p+=a.length});return o};
+ for(const f of files){let name=enc.encode(f.name),data=new Uint8Array(await f.blob.arrayBuffer()),crc=crc32(data),lh=join([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name]);locals.push(lh,data);centrals.push(join([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]));offset+=lh.length+data.length}
+ let c=join(centrals),l=join(locals),end=join([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(c.length),u32(l.length),u16(0)]);return new Blob([l,c,end],{type:"application/zip"})
+}
+document.getElementById("f").addEventListener("submit",async e=>{e.preventDefault();let btn=e.submitter;btn.disabled=true;btn.textContent="Creating PNG and ZIP...";try{let png=await makeRateCard(),data=rows().map(x=>x[0]+": "+x[1]).join("\n"),files=[{name:"Supplier-Price-Card.png",blob:png},{name:"Price-Details.txt",blob:new Blob([data],{type:"text/plain;charset=utf-8"})},...Array.from(document.getElementById("files").files).map(f=>({name:f.name,blob:f}))];let z=await zip(files),a=document.createElement("a");a.href=URL.createObjectURL(z);a.download=(val("brand")+"-"+val("model")+"-Supplier-Prices.zip").replace(/[^a-z0-9._-]/gi,"_");a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);alert("ZIP downloaded. Extract it to see Supplier-Price-Card.png (beautiful image), Price-Details.txt and original attachments.");}catch(err){alert("Could not generate ZIP: "+err.message)}finally{btn.disabled=false;btn.textContent="Generate Beautiful Image + ZIP"}});
+</script></body></html>
