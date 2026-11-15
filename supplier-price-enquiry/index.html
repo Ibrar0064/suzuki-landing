@@ -5,6 +5,7 @@
 </style></head><body><main class="wrap"><header class="hero"><h1>Price Enquiry Form</h1><div class="sub">Dubai &amp; UAE</div></header>
 <form id="priceForm"><section class="card"><label for="files">Attachment for File</label><div class="upload"><input id="files" type="file" multiple required accept=".xlsx,.xls,.csv,.jpg,.jpeg,.png,.pdf,.doc,.docx,.zip"></div><div class="hint">Attach Excel, JPG, PNG, PDF, Word or other supplier documents. WhatsApp/browser file-size and type limits may apply.</div></section>
 <section class="card"><div class="grid"><div><label for="brand">Vehicle Brand</label><input id="brand" placeholder="e.g. Toyota" required></div><div><label for="model">Vehicle Model</label><input id="model" placeholder="Enter vehicle year (e.g. 2022)" required></div></div>
+<label for="airportParking">AIRPORT PARKING FEE AED</label><input id="airportParking" inputmode="decimal">
 <label for="arrivalDubai">Arrival Price in DUBAI CITY / BEACH AED</label><input id="arrivalDubai" inputmode="decimal">
 <label for="arrivalEmirates">Arrival Price to / from other Emirates AED</label><input id="arrivalEmirates" inputmode="decimal">
 <label for="departureDubai">DEPARTURE Price in DUBAI CITY / BEACH AED</label><input id="departureDubai" inputmode="decimal">
@@ -30,7 +31,7 @@
 <p class="note">Thank you for sharing your rates and information.</p></form></main>
 <script>
 function buildPriceMessage(){
- const fields=[['Vehicle Brand','brand'],['Vehicle Model / Year','model'],['Arrival Price in Dubai City / Beach AED','arrivalDubai'],['Arrival Price to / from other Emirates AED','arrivalEmirates'],['Departure Price in Dubai City / Beach AED','departureDubai'],['Departure Price Dubai to / from other Emirates AED','departureEmirates'],['Half Day Price AED','halfDay'],['Full Day Dubai Price AED','fullDubai'],['Full Day Abu Dhabi Price AED','fullAbuDhabi'],['Hotel to Hotel Price AED','hotel'],['Dhow Cruise Price AED','dhow'],['Extra Hour Price AED','extraHour'],['Comments / Extra Information','comments']];
+ const fields=[['Vehicle Brand','brand'],['Vehicle Model / Year','model'],['AIRPORT PARKING FEE AED','airportParking'],['Arrival Price in Dubai City / Beach AED','arrivalDubai'],['Arrival Price to / from other Emirates AED','arrivalEmirates'],['Departure Price in Dubai City / Beach AED','departureDubai'],['Departure Price Dubai to / from other Emirates AED','departureEmirates'],['Half Day Price AED','halfDay'],['Full Day Dubai Price AED','fullDubai'],['Full Day Abu Dhabi Price AED','fullAbuDhabi'],['Hotel to Hotel Price AED','hotel'],['Dhow Cruise Price AED','dhow'],['Extra Hour Price AED','extraHour'],['Comments / Extra Information','comments']];
  const nl=String.fromCharCode(10);
  const completed=fields.map(([label,id])=>({label,value:document.getElementById(id).value.trim()})).filter(item=>item.value!=='');
  return ['SUPPLIER PRICE INFORMATION','==============================','',...completed.map(item=>item.label+':'+nl+item.value)].join(nl);
