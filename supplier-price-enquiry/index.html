@@ -33,7 +33,7 @@ function buildPriceMessage(){
  const fields=[['Vehicle Brand','brand'],['Vehicle Model / Year','model'],['Arrival Price in Dubai City / Beach AED','arrivalDubai'],['Arrival Price to / from other Emirates AED','arrivalEmirates'],['Departure Price in Dubai City / Beach AED','departureDubai'],['Departure Price Dubai to / from other Emirates AED','departureEmirates'],['Half Day Price AED','halfDay'],['Full Day Dubai Price AED','fullDubai'],['Full Day Abu Dhabi Price AED','fullAbuDhabi'],['Hotel to Hotel Price AED','hotel'],['Dhow Cruise Price AED','dhow'],['Extra Hour Price AED','extraHour'],['Comments / Extra Information','comments']];
  const nl=String.fromCharCode(10);
  const completed=fields.map(([label,id])=>({label,value:document.getElementById(id).value.trim()})).filter(item=>item.value!=='');
- return ['SUPPLIER PRICE INFORMATION','==============================','',...completed.map(item=>item.label+':'+nl+item.value),'','Thank you for sharing your rates and information.'].join(nl);
+ return ['SUPPLIER PRICE INFORMATION','==============================','',...completed.map(item=>item.label+':'+nl+item.value)].join(nl);
 }
 const form=document.getElementById('priceForm');
 const review=document.getElementById('reviewPanel');
