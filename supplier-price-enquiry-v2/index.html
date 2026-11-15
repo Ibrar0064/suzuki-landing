@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#bceeff">
+<title>Supplier Price Enquiry V2 – Dubai & UAE</title>
+<style>
+:root{--ink:#123e70;--blue:#168ee8;--green:#70dc39}*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:linear-gradient(180deg,#effcff,#bcefff 55%,#72d4f6);min-height:100vh}
+.wrap{max-width:760px;margin:auto;padding:12px}.hero{text-align:center;padding:25px 12px 18px;background:linear-gradient(135deg,#f4fdffdd,#a7e4ffdd);border:1px solid #8bdcff;border-radius:20px 20px 0 0}
+h1{font-size:clamp(27px,6vw,42px);margin:0}.sub{font-size:19px;font-style:italic;margin-top:7px}
+.card{background:#d8f5ffdf;border:1px solid #83d5fa;border-radius:17px;padding:16px;margin:12px 0;box-shadow:0 4px 14px #1675a51a}
+label{display:block;font-weight:700;margin:13px 0 6px;font-size:15px}
+input,textarea{width:100%;padding:12px;border:1.5px solid #5bb6ed;border-radius:10px;background:#fff;font:16px Arial;color:#173b68}
+input[type=file]{background:#effbff;padding:9px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.upload{border:2px dashed #168ee8;border-radius:12px;padding:13px;background:#eafaff}
+.hint{font-size:13px;color:#315e83;margin-top:7px}textarea{min-height:95px;resize:vertical}
+button{width:100%;border:0;border-radius:14px;padding:17px;font-size:18px;font-weight:800;color:#164d18;background:linear-gradient(#a2f36c,#70dc39);box-shadow:0 4px 0 #3caa1b;cursor:pointer}
+button:disabled{opacity:.6}.secondary{margin-top:12px;background:#fff;color:#123e70;box-shadow:none;border:1px solid #5bb6ed}
+.status{white-space:pre-wrap;background:#fff;padding:12px;border-radius:10px;max-height:240px;overflow:auto}
+.note{text-align:center;font-style:italic;padding:16px;font-size:15px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.card{padding:13px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="hero"><h1>Supplier Price Enquiry Form</h1><div class="sub">Dubai &amp; UAE · Experimental V2</div></header>
+<form id="priceForm">
+<section class="card">
+<label for="files">Attachment for File (Required)</label><div class="upload"><input id="files" type="file" multiple required accept=".xlsx,.xls,.csv,.jpg,.jpeg,.png,.pdf,.doc,.docx,.zip"></div>
+<div class="hint">Attach the latest rate sheet, quotation or supporting documents. Multiple files are allowed.</div>
+</section>
+<section class="card">
+<div class="grid"><div><label for="brand">Vehicle Brand (Required)</label><input id="brand" placeholder="e.g. Toyota" required></div><div><label for="model">Vehicle Model / Year (Required)</label><input id="model" placeholder="e.g. Hiace 2022" required></div></div>
+<label for="airportParking">AIRPORT PARKING FEE AED</label><input id="airportParking" inputmode="decimal">
+<label for="arrivalDubai">Arrival Price in DUBAI CITY / BEACH AED</label><input id="arrivalDubai" inputmode="decimal">
+<label for="arrivalEmirates">Arrival Price to / from other Emirates AED</label><input id="arrivalEmirates" inputmode="decimal">
+<label for="departureDubai">DEPARTURE Price in DUBAI CITY / BEACH AED</label><input id="departureDubai" inputmode="decimal">
+<label for="departureEmirates">Departure Price DUBAI to / from other Emirates AED</label><input id="departureEmirates" inputmode="decimal">
+<label for="halfDay">Half Day Price AED</label><input id="halfDay" inputmode="decimal">
+<label for="fullDubai">Full Day Dubai Price AED</label><input id="fullDubai" inputmode="decimal">
+<label for="fullAbuDhabi">Full day ABU DHABI Price AED</label><input id="fullAbuDhabi" inputmode="decimal">
+<label for="hotel">Hotel to Hotel Price AED</label><input id="hotel" inputmode="decimal">
+<label for="dhow">Dhow Cruise Price AED</label><input id="dhow" inputmode="decimal">
+<label for="extraHour">Extra Hour Price AED</label><input id="extraHour" inputmode="decimal">
+<label for="comments">Comments / Extra Information</label><textarea id="comments" placeholder="Add any additional details here..."></textarea>
+</section>
+<button type="submit">Review Details &amp; Attachments</button>
+<section id="reviewPanel" class="card" hidden aria-live="polite">
+<h2 style="margin-top:0">Review Before Returning</h2>
+<p>Check the information and attached files. Tap the green button to open your phone's sharing options.</p>
+<div id="reviewDetails" class="status"></div><h3>Selected Attachments</h3><ul id="reviewFiles"></ul>
+<button type="button" id="shareAll">Share Completed Form + Attachments</button>
+<button type="button" id="downloadAll" class="secondary">Download ZIP Instead</button>
+<button type="button" id="editForm" class="secondary">Back to Edit</button>
+<p class="hint">Choose WhatsApp in the Android sharing screen, then select the same chat you are using with the person who requested these rates. The ZIP contains your price details and original attachments together. WhatsApp may not support every file size or type.</p>
+<div id="shareStatus" class="hint" role="status"></div>
+</section>
+<p class="note">Thank you for sharing your rates and information.</p>
+</form></main>
+<script>
+const byId=id=>document.getElementById(id);
+function buildPriceMessage(){
+ const fields=[['Vehicle Brand','brand'],['Vehicle Model / Year','model'],['AIRPORT PARKING FEE AED','airportParking'],['Arrival Price in Dubai City / Beach AED','arrivalDubai'],['Arrival Price to / from other Emirates AED','arrivalEmirates'],['Departure Price in Dubai City / Beach AED','departureDubai'],['Departure Price Dubai to / from other Emirates AED','departureEmirates'],['Half Day Price AED','halfDay'],['Full Day Dubai Price AED','fullDubai'],['Full Day Abu Dhabi Price AED','fullAbuDhabi'],['Hotel to Hotel Price AED','hotel'],['Dhow Cruise Price AED','dhow'],['Extra Hour Price AED','extraHour'],['Comments / Extra Information','comments']];
+ const nl=String.fromCharCode(10);
+ const completed=fields.map(([label,id])=>({label,value:byId(id).value.trim()})).filter(x=>x.value!=='');
+ return ['SUPPLIER PRICE INFORMATION','==============================','',...completed.map(x=>x.label+':'+nl+x.value)].join(nl);
+}
+function crc32(bytes){let crc=0xffffffff;for(let i=0;i<bytes.length;i++){crc^=bytes[i];for(let j=0;j<8;j++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}return(crc^0xffffffff)>>>0;}
+async function makeZip(files){
+ const enc=new TextEncoder(),local=[],central=[];let offset=0;const now=new Date();
+ const dosTime=(now.getHours()<<11)|(now.getMinutes()<<5)|(Math.floor(now.getSeconds()/2)),dosDate=((Math.max(1980,now.getFullYear())-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+ const u16=n=>{const a=new Uint8Array(2);new DataView(a.buffer).setUint16(0,n,true);return a;};
+ const u32=n=>{const a=new Uint8Array(4);new DataView(a.buffer).setUint32(0,n>>>0,true);return a;};
+ const join=parts=>{const out=new Uint8Array(parts.reduce((s,p)=>s+p.length,0));let at=0;for(const p of parts){out.set(p,at);at+=p.length;}return out;};
+ for(const file of files){const name=enc.encode(file.name),data=new Uint8Array(await file.arrayBuffer()),crc=crc32(data);
+ const lh=join([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(dosTime),u16(dosDate),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name]);local.push(lh,data);
+ central.push(join([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(dosTime),u16(dosDate),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]));offset+=lh.length+data.length;}
+ const cb=join(central),lb=join(local),end=join([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cb.length),u32(lb.length),u16(0)]);
+ return new Blob([lb,cb,end],{type:'application/zip'});
+}
+async function prepareZip(){
+ const originals=[...byId('files').files];if(!originals.length)throw new Error('Please attach at least one file.');
+ const details=new File([buildPriceMessage()],'Supplier-Price-Details.txt',{type:'text/plain'});
+ const blob=await makeZip([details,...originals]);
+ return new File([blob],'Supplier-Price-Details-and-Documents.zip',{type:'application/zip'});
+}
+byId('priceForm').addEventListener('submit',e=>{
+ e.preventDefault();const files=[...byId('files').files];if(!files.length){alert('Please select at least one attachment.');byId('files').focus();return;}
+ byId('reviewDetails').textContent=buildPriceMessage();const list=byId('reviewFiles');list.replaceChildren();
+ files.forEach(f=>{const li=document.createElement('li');li.textContent=f.name+' ('+Math.ceil(f.size/1024)+' KB)';list.appendChild(li);});
+ byId('shareStatus').textContent='';byId('reviewPanel').hidden=false;byId('reviewPanel').scrollIntoView({behavior:'smooth',block:'start'});
+});
+byId('editForm').addEventListener('click',()=>{byId('reviewPanel').hidden=true;byId('files').focus();});
+byId('shareAll').addEventListener('click',async()=>{
+ const button=byId('shareAll');button.disabled=true;button.textContent='Preparing share package…';byId('shareStatus').textContent='';
+ try{
+  const zip=await prepareZip();
+  if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[zip]})){
+   byId('shareStatus').textContent='Your browser does not support sharing this ZIP directly. Use “Download ZIP Instead”, then share it from Downloads.';
+   return;
+  }
+  await navigator.share({files:[zip],title:'Supplier Price Details and Documents',text:'Completed supplier price details and original attachments.'});
+  byId('shareStatus').textContent='Sharing sheet opened. Complete the send in WhatsApp.';
+ }catch(err){
+  if(err&&err.name==='AbortError'){byId('shareStatus').textContent='Sharing cancelled. Your form data and attachments are still here; you can try again.';}
+  else{byId('shareStatus').textContent='Direct sharing was not completed: '+(err.message||'unsupported by this browser/app')+'. Please use “Download ZIP Instead”.';}
+ }finally{button.disabled=false;button.textContent='Share Completed Form + Attachments';}
+});
+byId('downloadAll').addEventListener('click',async()=>{
+ const button=byId('downloadAll');button.disabled=true;button.textContent='Preparing ZIP…';
+ try{const zip=await prepareZip(),url=URL.createObjectURL(zip),a=document.createElement('a');a.href=url;a.download=zip.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);byId('shareStatus').textContent='ZIP download started. Open Downloads and share the ZIP through WhatsApp.';}
+ catch(err){byId('shareStatus').textContent='Could not prepare ZIP: '+(err.message||'Please try again.');}
+ finally{button.disabled=false;button.textContent='Download ZIP Instead';}
+});
+</script></body></html>
