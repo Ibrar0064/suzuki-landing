@@ -50,5 +50,33 @@ async function zip(files){
  for(const f of files){let name=enc.encode(f.name),data=new Uint8Array(await f.blob.arrayBuffer()),crc=crc32(data),lh=join([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name]);locals.push(lh,data);centrals.push(join([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]));offset+=lh.length+data.length}
  let c=join(centrals),l=join(locals),end=join([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(c.length),u32(l.length),u16(0)]);return new Blob([l,c,end],{type:"application/zip"})
 }
-document.getElementById("f").addEventListener("submit",async e=>{e.preventDefault();let btn=e.submitter;btn.disabled=true;btn.textContent="Creating PNG and ZIP...";try{let png=await makeRateCard(),picked=[];for(let i=1;i<=attachmentCount;i++){let el=document.getElementById("file"+i);if(el&&el.files[0])picked.push(el.files[0])}let files=[{name:"Supplier-Price-Card.png",blob:png},...picked.map(f=>({name:f.name,blob:f}))];let z=await zip(files),a=document.createElement("a");a.href=URL.createObjectURL(z);a.download=(val("brand")+"-"+val("model")+"-Supplier-Prices.zip").replace(/[^a-z0-9._-]/gi,"_");a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);alert("ZIP downloaded. Extract it to see Supplier-Price-Card.png and the original supplier attachments.");}catch(err){alert("Could not generate ZIP: "+err.message)}finally{btn.disabled=false;btn.textContent="Generate Beautiful Image + ZIP"}});
+
+async function imageAsJpeg(file){
+ const bitmap=await createImageBitmap(file);
+ const scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));
+ const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+ const ctx=canvas.getContext("2d");ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
+ const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("Could not convert an attachment image")),"image/jpeg",0.84));
+ return {bytes:new Uint8Array(await blob.arrayBuffer()),width:canvas.width,height:canvas.height};
+}
+async function makeOnePageImagePdf(imageFiles){
+ const imgs=[];for(const f of imageFiles)imgs.push(await imageAsJpeg(f));
+ if(!imgs.length)return null;
+ const enc=new TextEncoder(),ascii=s=>enc.encode(s),join=parts=>{const out=new Uint8Array(parts.reduce((n,p)=>n+p.length,0));let at=0;for(const p of parts){out.set(p,at);at+=p.length}return out};
+ const pageW=842,pageH=595,margin=24,gap=12,cols=Math.max(1,Math.ceil(Math.sqrt(imgs.length*pageW/pageH))),rows=Math.ceil(imgs.length/cols),cellW=(pageW-2*margin-gap*(cols-1))/cols,cellH=(pageH-2*margin-gap*(rows-1))/rows;
+ let commands="",xobjects="";
+ imgs.forEach((im,i)=>{const col=i%cols,row=Math.floor(i/cols),scale=Math.min(cellW/im.width,cellH/im.height),w=im.width*scale,h=im.height*scale,x=margin+col*(cellW+gap)+(cellW-w)/2,y=pageH-margin-(row+1)*cellH-row*gap+(cellH-h)/2;const name="/Im"+(i+1);xobjects+=name+" "+(4+i)+" 0 R ";commands+="q "+w.toFixed(3)+" 0 0 "+h.toFixed(3)+" "+x.toFixed(3)+" "+y.toFixed(3)+" cm "+name+" Do Q\n";});
+ const content=ascii(commands),objects=[];
+ objects[1]=ascii("<< /Type /Catalog /Pages 2 0 R >>");
+ objects[2]=ascii("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+ objects[3]=ascii("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+pageW+" "+pageH+"] /Resources << /XObject << "+xobjects+">> >> /Contents "+(4+imgs.length)+" 0 R >>");
+ for(let i=0;i<imgs.length;i++){const im=imgs[i],head=ascii("<< /Type /XObject /Subtype /Image /Width "+im.width+" /Height "+im.height+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+im.bytes.length+" >>\nstream\n"),tail=ascii("\nendstream");objects[4+i]=join([head,im.bytes,tail]);}
+ objects[4+imgs.length]=join([ascii("<< /Length "+content.length+" >>\nstream\n"),content,ascii("endstream")]);
+ const parts=[ascii("%PDF-1.4\n%âãÏÓ\n")],offsets=[0];let total=parts[0].length;
+ for(let i=1;i<objects.length;i++){offsets[i]=total;const chunk=join([ascii(i+" 0 obj\n"),objects[i],ascii("\nendobj\n")]);parts.push(chunk);total+=chunk.length;}
+ const xrefAt=total;let xref="xref\n0 "+objects.length+"\n0000000000 65535 f \n";for(let i=1;i<objects.length;i++)xref+=String(offsets[i]).padStart(10,"0")+" 00000 n \n";
+ parts.push(ascii(xref+"trailer\n<< /Size "+objects.length+" /Root 1 0 R >>\nstartxref\n"+xrefAt+"\n%%EOF"));
+ return new Blob(parts,{type:"application/pdf"});
+}
+document.getElementById("f").addEventListener("submit",async e=>{e.preventDefault();let btn=e.submitter;btn.disabled=true;btn.textContent="Creating rate card, PDF and ZIP...";try{let png=await makeRateCard(),picked=[];for(let i=1;i<=attachmentCount;i++){let el=document.getElementById("file"+i);if(el&&el.files[0])picked.push(el.files[0])}const images=picked.filter(f=>f.type.startsWith("image/")),others=picked.filter(f=>!f.type.startsWith("image/"));let files=[{name:"Supplier-Price-Card.png",blob:png}];if(images.length){const pdf=await makeOnePageImagePdf(images);files.push({name:"Supplier-Images-Combined-One-Page.pdf",blob:pdf});}files.push(...others.map(f=>({name:f.name,blob:f})));let z=await zip(files),a=document.createElement("a");a.href=URL.createObjectURL(z);a.download=(val("brand")+"-"+val("model")+"-Supplier-Prices.zip").replace(/[^a-z0-9._-]/gi,"_");a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);alert("ZIP downloaded. It contains the supplier rate card, one PDF page with all selected images, and any original non-image attachments.");}catch(err){alert("Could not generate ZIP: "+err.message)}finally{btn.disabled=false;btn.textContent="Generate Beautiful Image + ZIP"}});
 </script></body></html>
